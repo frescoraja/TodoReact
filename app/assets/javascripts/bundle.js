@@ -58,16 +58,13 @@
 	
 	var _todo_list2 = _interopRequireDefault(_todo_list);
 	
-	var _todo_form = __webpack_require__(171);
-	
-	var _todo_form2 = _interopRequireDefault(_todo_form);
-	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	var main = document.getElementById("main");
-	var other = document.getElementById("other");
-	_reactDom2.default.render(_react2.default.createElement(_todo_list2.default, null), main);
-	_reactDom2.default.render(_react2.default.createElement(_todo_form2.default, null), other);
+	
+	_reactDom2.default.render(_react2.default.createElement(_todo_list2.default, {
+	  __self: undefined
+	}), main);
 
 /***/ },
 /* 1 */
@@ -20386,6 +20383,10 @@
 	
 	var _todo_list_item2 = _interopRequireDefault(_todo_list_item);
 	
+	var _todo_form = __webpack_require__(172);
+	
+	var _todo_form2 = _interopRequireDefault(_todo_form);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -20426,13 +20427,12 @@
 	  }, {
 	    key: 'renderTodoList',
 	    value: function renderTodoList() {
+	      var _this2 = this;
+	
 	      var todos = this.state.todos;
 	      return todos.map(function (todo, idx) {
-	        return _react2.default.createElement(
-	          'li',
-	          { key: idx },
-	          _react2.default.createElement(_todo_list_item2.default, { todo: todo })
-	        );
+	        return _react2.default.createElement(_todo_list_item2.default, { key: idx, todo: todo, __self: _this2
+	        });
 	      });
 	    }
 	  }, {
@@ -20440,12 +20440,24 @@
 	    value: function render() {
 	      return _react2.default.createElement(
 	        'div',
-	        null,
+	        { className: 'TodoList', __self: this
+	        },
 	        _react2.default.createElement(
-	          'ul',
-	          null,
+	          'h1',
+	          {
+	            __self: this
+	          },
+	          'Todo!'
+	        ),
+	        _react2.default.createElement(
+	          'div',
+	          { className: 'todo-list', __self: this
+	          },
 	          this.renderTodoList()
-	        )
+	        ),
+	        _react2.default.createElement(_todo_form2.default, {
+	          __self: this
+	        })
 	      );
 	    }
 	  }]);
@@ -20528,12 +20540,33 @@
 	    if (todo) {
 	      $.ajax({
 	        method: "DELETE",
-	        url: "api/todos/" + idx,
+	        url: "api/todos/" + id,
 	        success: function success() {
 	          _todos.splice(idx, 1);
 	          _this3.changed();
 	        }
 	      });
+	    }
+	  },
+	  toggleDone: function toggleDone(id) {
+	    var _this4 = this;
+	
+	    var idx = this.find(id);
+	    var todo = _todos[idx];
+	
+	    if (todo) {
+	      (function () {
+	        var done = !todo.done;
+	        $.ajax({
+	          method: "PATCH",
+	          url: "api/todos/" + id,
+	          data: { todo: { done: done } },
+	          success: function success() {
+	            todo.done = done;
+	            _this4.changed();
+	          }
+	        });
+	      })();
 	    }
 	  }
 	};
@@ -20556,6 +20589,18 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
+	var _todo_store = __webpack_require__(169);
+	
+	var _todo_store2 = _interopRequireDefault(_todo_store);
+	
+	var _todo_detail_view = __webpack_require__(171);
+	
+	var _todo_detail_view2 = _interopRequireDefault(_todo_detail_view);
+	
+	var _todo_done_button = __webpack_require__(173);
+	
+	var _todo_done_button2 = _interopRequireDefault(_todo_done_button);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -20567,32 +20612,60 @@
 	var TodoListItem = function (_React$Component) {
 	  _inherits(TodoListItem, _React$Component);
 	
-	  function TodoListItem() {
+	  function TodoListItem(props) {
 	    _classCallCheck(this, TodoListItem);
 	
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(TodoListItem).apply(this, arguments));
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(TodoListItem).call(this, props));
+	
+	    _this.state = { detail: false };
+	    _this.handleDestroy = _this.handleDestroy.bind(_this);
+	    _this.toggleDetail = _this.toggleDetail.bind(_this);
+	    return _this;
 	  }
 	
 	  _createClass(TodoListItem, [{
+	    key: 'handleDestroy',
+	    value: function handleDestroy(event) {
+	      event.stopPropagation();
+	      _todo_store2.default.destroy(this.props.todo.id);
+	    }
+	  }, {
+	    key: 'toggleDetail',
+	    value: function toggleDetail(event) {
+	      event.preventDefault();
+	      this.setState({ detail: !this.state.detail });
+	    }
+	  }, {
 	    key: 'render',
 	    value: function render() {
-	      var title = this.props.todo.title,
-	          body = this.props.todo.body;
+	      var detail = void 0,
+	          classname = void 0;
+	      if (this.state.detail) {
+	        detail = _react2.default.createElement(_todo_detail_view2.default, { handleDestroy: this.handleDestroy, todo: this.props.todo, __self: this
+	        });
+	        classname = "list-item";
+	      } else {
+	        classname = "list-item-min";
+	      }
+	
 	      return _react2.default.createElement(
 	        'div',
-	        null,
+	        { className: classname, __self: this
+	        },
 	        _react2.default.createElement(
 	          'div',
-	          null,
-	          'Title: ',
-	          title
+	          { className: 'todo-header', __self: this
+	          },
+	          _react2.default.createElement(
+	            'a',
+	            { onClick: this.toggleDetail, __self: this
+	            },
+	            this.props.todo.title
+	          ),
+	          _react2.default.createElement(_todo_done_button2.default, { todo: this.props.todo, __self: this
+	          })
 	        ),
-	        _react2.default.createElement(
-	          'div',
-	          null,
-	          'Body: ',
-	          body
-	        )
+	        detail
 	      );
 	    }
 	  }]);
@@ -20604,6 +20677,64 @@
 
 /***/ },
 /* 171 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _react = __webpack_require__(1);
+	
+	var _react2 = _interopRequireDefault(_react);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var TodoDetailView = function (_React$Component) {
+	  _inherits(TodoDetailView, _React$Component);
+	
+	  function TodoDetailView() {
+	    _classCallCheck(this, TodoDetailView);
+	
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(TodoDetailView).apply(this, arguments));
+	  }
+	
+	  _createClass(TodoDetailView, [{
+	    key: "render",
+	    value: function render() {
+	      return _react2.default.createElement(
+	        "div",
+	        { className: "todo-detail-view", __self: this
+	        },
+	        this.props.todo.body,
+	        _react2.default.createElement(
+	          "button",
+	          {
+	            onClick: this.props.handleDestroy, i: true,
+	            className: "btn btn-danger", __self: this
+	          },
+	          "Delete"
+	        )
+	      );
+	    }
+	  }]);
+	
+	  return TodoDetailView;
+	}(_react2.default.Component);
+	
+	exports.default = TodoDetailView;
+
+/***/ },
+/* 172 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -20671,31 +20802,37 @@
 	    value: function render() {
 	      return _react2.default.createElement(
 	        'form',
-	        { onSubmit: this.handleSubmit },
+	        { onSubmit: this.handleSubmit, __self: this
+	        },
 	        _react2.default.createElement(
 	          'div',
-	          { className: 'form-group' },
+	          { className: 'form-group', __self: this
+	          },
 	          _react2.default.createElement('input', {
 	            ref: 'title',
 	            className: 'form-control',
 	            value: this.state.title,
 	            placeholder: 'enter Todo..',
-	            onChange: this.updateTitle })
+	            onChange: this.updateTitle, __self: this
+	          })
 	        ),
 	        _react2.default.createElement(
 	          'div',
-	          { className: 'form-group' },
+	          { className: 'form-group', __self: this
+	          },
 	          _react2.default.createElement('textarea', {
 	            ref: 'body',
 	            cols: '20',
 	            className: 'form-control',
 	            value: this.state.body,
 	            rows: '5',
-	            onChange: this.updateBody })
+	            onChange: this.updateBody, __self: this
+	          })
 	        ),
 	        _react2.default.createElement(
 	          'button',
-	          { className: 'submit-todo btn btn-primary' },
+	          { className: 'submit-todo btn btn-primary', __self: this
+	          },
 	          'Create Todo'
 	        )
 	      );
@@ -20706,6 +20843,70 @@
 	}(_react2.default.Component);
 	
 	exports.default = TodoForm;
+
+/***/ },
+/* 173 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _react = __webpack_require__(1);
+	
+	var _react2 = _interopRequireDefault(_react);
+	
+	var _todo_store = __webpack_require__(169);
+	
+	var _todo_store2 = _interopRequireDefault(_todo_store);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var TodoDoneButton = function (_React$Component) {
+	  _inherits(TodoDoneButton, _React$Component);
+	
+	  function TodoDoneButton() {
+	    _classCallCheck(this, TodoDoneButton);
+	
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(TodoDoneButton).apply(this, arguments));
+	  }
+	
+	  _createClass(TodoDoneButton, [{
+	    key: 'handleDone',
+	    value: function handleDone(event) {
+	      event.stopPropagation();
+	      _todo_store2.default.toggleDone(this.props.todo.id);
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render() {
+	      var classname = "btn btn-xs done-button";
+	      classname += this.props.todo.done ? " btn-danger" : " btn-success";
+	      var text = this.props.todo.done ? "Undo" : "Done";
+	      return _react2.default.createElement(
+	        'button',
+	        { className: classname,
+	          onClick: this.handleDone.bind(this), __self: this
+	        },
+	        text
+	      );
+	    }
+	  }]);
+	
+	  return TodoDoneButton;
+	}(_react2.default.Component);
+	
+	exports.default = TodoDoneButton;
 
 /***/ }
 /******/ ]);

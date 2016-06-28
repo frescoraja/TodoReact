@@ -1,6 +1,7 @@
 import React from 'react';
 import TodoStore from '../stores/todo_store';
 import TodoListItem from './todo_list_item';
+import TodoForm from './todo_form';
 
 export default class TodoList extends React.Component {
   constructor(props) {
@@ -26,19 +27,19 @@ export default class TodoList extends React.Component {
     const todos = this.state.todos;
     return todos.map((todo, idx) => {
       return (
-          <li key={idx}>
-            <TodoListItem todo={todo} />
-          </li>
+        <TodoListItem key={idx} todo={todo} />
       );
     });
   }
 
   render() {
     return (
-      <div>
-        <ul>
-          {this.renderTodoList()}
-        </ul>
+      <div className="TodoList">
+        <h1>Todo!</h1>
+          <div className="todo-list">
+            {this.renderTodoList()}
+          </div>
+          <TodoForm />
       </div>
     );
   }

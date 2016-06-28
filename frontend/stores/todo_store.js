@@ -57,15 +57,33 @@ const TodoStore = {
   },
 
   destroy(id) {
-    let idx = this.find(id),
+    const idx = this.find(id),
         todo = _todos[idx];
 
     if (todo) {
       $.ajax({
         method: "DELETE",
-        url: `api/todos/${idx}`,
+        url: `api/todos/${id}`,
         success: () => {
           _todos.splice(idx, 1);
+          this.changed();
+        }
+      });
+    }
+  },
+
+  toggleDone(id) {
+    const idx = this.find(id);
+    const todo = _todos[idx];
+
+    if (todo) {
+      const done = !todo.done;
+      $.ajax({
+        method: "PATCH",
+        url: `api/todos/${id}`,
+        data: { todo: { done: done } },
+        success: () => {
+          todo.done = done;
           this.changed();
         }
       });
