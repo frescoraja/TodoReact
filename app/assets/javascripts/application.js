@@ -12,5 +12,5 @@
 //
 //= require jquery
 //= require jquery_ujs
-//= bundle
+//= require bundle
 //= require_tree .

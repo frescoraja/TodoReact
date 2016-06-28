@@ -1,4 +1,4 @@
-let _todos = {},
+let _todos = [],
     _callbacks = [];
 
 const TodoStore = {
@@ -73,4 +73,4 @@ const TodoStore = {
   }
 };
 
-export default TodoStore
+export default TodoStore 
