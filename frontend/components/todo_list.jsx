@@ -23,24 +23,22 @@ export default class TodoList extends React.Component {
     this.setState({ todos: TodoStore.all() });
   }
 
-  renderTodoList() {
-    const todos = this.state.todos;
-    return todos.map((todo, idx) => {
-      return (
-        <TodoListItem key={idx} todo={todo} />
-      );
-    });
-  }
-
   render() {
+    const todos = this.state.todos;
     return (
       <div className="TodoList">
         <h1>Todo!</h1>
           <div className="todo-list">
-            {this.renderTodoList()}
+            {
+              todos.map((todo) => {
+                return (
+                  <TodoListItem key={todo.id} todo={todo} />
+                );
+              })
+            }
           </div>
           <TodoForm />
-      </div>
+        </div>
     );
   }
 }

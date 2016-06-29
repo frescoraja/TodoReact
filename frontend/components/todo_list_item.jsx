@@ -22,18 +22,14 @@ export default class TodoListItem extends React.Component {
   }
 
   render() {
-    let detail, classname;
+    let detail;
     if (this.state.detail) {
       detail = (
         <TodoDetailView handleDestroy={this.handleDestroy} todo={this.props.todo} />
       );
-      classname = "list-item";
-    } else {
-      classname = "list-item-min";
     }
-
     return (
-      <div className={classname}>
+      <div className="list-group-item">
         <div className="todo-header">
           <a onClick={this.toggleDetail}>{this.props.todo.title}</a>
           <TodoDoneButton todo={this.props.todo} />
